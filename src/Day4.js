@@ -1,5 +1,5 @@
-const { create } = require("domain");
 const fs = require("fs");
+const { join } = require("path");
 const text = fs.readFileSync("./dailydata.txt").toString("utf-8");
 const dataArray = text.split("\n");
 
@@ -8,7 +8,7 @@ function createBingoBoards(arr) {
   let board = [];
   for (let i = 1; i < arr.length; i++) {
     if (arr[i] !== "" && board.length < 5) {
-      let row = arr[i].split(" ");
+      let row = arr[i].split(" ").filter((val) => val != "");
       board.push(row);
     }
     if (board.length === 5) {
@@ -16,13 +16,8 @@ function createBingoBoards(arr) {
       board = [];
     }
   }
-  console.log(allBoards);
-
-  return allBoards.filter((val) => val != "");
+  return allBoards;
 }
-
-const bingoNums = dataArray[0].split(",");
-const allBoards = createBingoBoards(dataArray);
 
 function playBingo(numArr, boardArr) {
   let bingo = [];
@@ -32,24 +27,29 @@ function playBingo(numArr, boardArr) {
       for (let row of board) {
         for (let i = 0; i < 5; i++) {
           if (parseInt(row[i]) === parseInt(bingoNum)) {
-            row.replace(row[i], "");
+            row[i] = "*";
           }
           if (
-            row === "" ||
-            row[i] +
-              (row + (1)[i]) +
-              (row + (2)[i]) +
-              (row + (3)[i]) +
-              (row + (4)[i]) ==
-              ""
+            row.join("") === "*****" ||
+            // FIXME
+            board[0][i] +
+              board[1][i] +
+              board[2][i] +
+              board[3][i] +
+              board[4][i] ===
+              "*****"
           ) {
-            bingo = this.board;
-            bingoNumber = parseInt(this.bingoNums);
+            bingo = board;
+            bingoNumber = parseInt(bingoNum);
+            break;
           }
         }
       }
     }
   }
+  console.log(allBoards);
+
+  console.log(bingoNumber);
   let totalRemaining = 0;
   for (let bingoRow of bingo) {
     for (let n of bingoRow) {
@@ -58,6 +58,9 @@ function playBingo(numArr, boardArr) {
   }
   return totalRemaining * bingoNumber;
 }
+
+const bingoNums = dataArray[0].split(",");
+const allBoards = createBingoBoards(dataArray);
 
 // console.log(createBingoBoards(dataArray));
 console.log(playBingo(bingoNums, allBoards));

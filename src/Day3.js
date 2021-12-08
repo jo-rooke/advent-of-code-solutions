@@ -90,7 +90,7 @@ function lifeSupportRating(arr) {
         co2Arr = co2Arr.filter((num) => num[i] === "1");
       }
     }
-  }
+  }s
   let o2Flipped = o2Arr.reverse().join("");
   let co2Flipped = co2Arr.reverse().join("");
   let o2 = calcDecimals(o2Flipped);
